@@ -1,0 +1,42 @@
+[
+  {
+    "id": "infomarketopen",
+    "name": "인포마켓 infomarket",
+    "enabled": true
+  },
+  {
+    "id": "hslpartners",
+    "name": "IT의 신 이형수",
+    "enabled": true
+  },
+  {
+    "id": "eqmirae",
+    "name": "[미래에셋증권 전략/퀀트 유명간]",
+    "enabled": true
+  },
+  {
+    "id": "sejongdata2013",
+    "name": "세종기업데이터",
+    "enabled": true
+  },
+  {
+    "id": "kiwoom_semibat",
+    "name": "키움 반도체,이차전지 PRIME ☀️",
+    "enabled": true
+  },
+  {
+    "id": "hanasmallcap",
+    "name": "하나 미래산업팀(스몰캡)",
+    "enabled": true
+  },
+  {
+    "id": "Ibks_innovation_research",
+    "name": "IBK투자증권 기업분석부",
+    "enabled": true
+  },
+  {
+    "id": "eng999view",
+    "name": "엔지니어뷰",
+    "enabled": true
+  }
+]

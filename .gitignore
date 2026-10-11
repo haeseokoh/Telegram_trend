@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.venv/
+.runtime/
+/data/
+/data_next/
+/snapshots/
+/screenshots/
+/channels.json
+/REPORT.md
+.env
+.env.*
+node_modules/
+*.log
+*.lnk

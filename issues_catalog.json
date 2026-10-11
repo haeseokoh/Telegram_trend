@@ -1,0 +1,248 @@
+[
+  {
+    "entities": [
+      "엔비디아"
+    ],
+    "issue": "HBM4·Rubin 구성, 광통신/CPO 공급망, AI 투자 및 인수 검토 보도가 반복됨. 인수 검토와 기술 전망은 채널의 주장으로 취급.",
+    "links": [
+      "https://t.me/infomarketopen/52269",
+      "https://t.me/infomarketopen/52283",
+      "https://t.me/infomarketopen/52335"
+    ]
+  },
+  {
+    "entities": [
+      "마이크론"
+    ],
+    "issue": "HBM4 생산전략 영상, 특허 라이선스·소송 합의, 증권사 전망이 함께 등장. 같은 영상 재게시 6건은 새 이슈 6개가 아님.",
+    "links": [
+      "https://t.me/infomarketopen/52076",
+      "https://t.me/infomarketopen/52079",
+      "https://t.me/infomarketopen/52080",
+      "https://t.me/infomarketopen/52127"
+    ]
+  },
+  {
+    "entities": [
+      "TSMC",
+      "테슬라"
+    ],
+    "issue": "미국 팹 협력 가능성과 첨단 패키징 생태계가 주요 주제. 협력 가능성은 확정된 계약으로 해석하지 않음.",
+    "links": [
+      "https://t.me/infomarketopen/52020",
+      "https://t.me/hslpartners/9635",
+      "https://t.me/infomarketopen/52300"
+    ]
+  },
+  {
+    "entities": [
+      "SK하이닉스"
+    ],
+    "issue": "HBM 하이브리드 본딩 개발 난항 주장과 솔리다임 IPO 예상. 본딩 글 9건은 사람이 같은 이슈로 묶었으나 본문 군집은 2개로 남음. 기술 우열 및 IPO 일정은 미검증.",
+    "links": [
+      "https://t.me/infomarketopen/52155",
+      "https://t.me/infomarketopen/52194",
+      "https://t.me/infomarketopen/52195",
+      "https://t.me/infomarketopen/52197",
+      "https://t.me/infomarketopen/52198",
+      "https://t.me/infomarketopen/52199",
+      "https://t.me/infomarketopen/52200",
+      "https://t.me/infomarketopen/52201",
+      "https://t.me/infomarketopen/52203",
+      "https://t.me/infomarketopen/52204"
+    ]
+  },
+  {
+    "entities": [
+      "삼성전자"
+    ],
+    "issue": "3분기 잠정실적 수치, 이익률 해석, HBM 장기공급계약 보도. 공시를 전달한 글과 해설 글은 같은 실적 이슈에 해당해도 별도 본문임. 수치는 DART 원문 대조 전이므로 확정 사실로 재전달하지 않음.",
+    "links": [
+      "https://t.me/infomarketopen/52153",
+      "https://t.me/hslpartners/9641",
+      "https://t.me/hslpartners/9644",
+      "https://t.me/hslpartners/9650"
+    ]
+  },
+  {
+    "entities": [
+      "라간 프리시전"
+    ],
+    "issue": "렌즈 매출 외에 CPO용 FA/FAU 인증과 양산 계획에 관심이 집중. 52183~52185는 반복 본문, 52188은 같은 이슈의 다른 보도.",
+    "links": [
+      "https://t.me/infomarketopen/51967",
+      "https://t.me/infomarketopen/52183",
+      "https://t.me/infomarketopen/52184",
+      "https://t.me/infomarketopen/52185",
+      "https://t.me/infomarketopen/52188"
+    ]
+  },
+  {
+    "entities": [
+      "알파벳(구글)"
+    ],
+    "issue": "TPU·PCB 공급망과 데이터센터 관련 글에 등장. 본문 주변 기업 언급이 많아 단독 분석 빈도와 구분 필요.",
+    "links": [
+      "https://t.me/infomarketopen/52037",
+      "https://t.me/infomarketopen/52132",
+      "https://t.me/hslpartners/9650"
+    ]
+  },
+  {
+    "entities": [
+      "삼성전기"
+    ],
+    "issue": "AI 서버용 MLCC 공급계약 보도와 퀀트 이익모멘텀 상향 목록에 등장. 세 채널에서 확인되지만 미래에셋 1건은 목록 언급.",
+    "links": [
+      "https://t.me/infomarketopen/52035",
+      "https://t.me/infomarketopen/52038",
+      "https://t.me/hslpartners/9650",
+      "https://t.me/eqmirae/3228"
+    ]
+  },
+  {
+    "entities": [
+      "파두",
+      "한솔케미칼"
+    ],
+    "issue": "ETF 편입 Weekly의 주요 종목으로 소개되며 다른 Daily 목록에도 등장. Weekly 게시일은 기간 안이지만 분석 대상 거래 주간은 9/28~10/2임.",
+    "links": [
+      "https://t.me/eqmirae/3229",
+      "https://t.me/eqmirae/3230",
+      "https://t.me/eqmirae/3231"
+    ]
+  },
+  {
+    "entities": [
+      "SpaceX"
+    ],
+    "issue": "스타십, Starlink 이동통신·주파수, 발사 인프라, AI 투자자금이 반복 주제. 게시물의 SPCX 표기만으로 거래 가능한 상장 종목이라고 확정하지 않음.",
+    "links": [
+      "https://t.me/infomarketopen/52011",
+      "https://t.me/infomarketopen/52093",
+      "https://t.me/infomarketopen/52241",
+      "https://t.me/hslpartners/9635"
+    ]
+  },
+  {
+    "entities": [
+      "LG전자"
+    ],
+    "issue": "데이터센터 칠러 계약과 CDU·냉각 공급망을 다룬 글. 계약·인증 주장은 채널 원문 전달로 취급.",
+    "links": [
+      "https://t.me/sejongdata2013/12325",
+      "https://t.me/eng999view/8881",
+      "https://t.me/eng999view/8904"
+    ]
+  },
+  {
+    "entities": [
+      "에코프로비엠",
+      "LG에너지솔루션"
+    ],
+    "issue": "양극재·배터리 수출과 시가총액·실적 비교. 인과관계는 채널의 분석.",
+    "links": [
+      "https://t.me/sejongdata2013/12327",
+      "https://t.me/sejongdata2013/12336",
+      "https://t.me/eng999view/8910"
+    ]
+  },
+  {
+    "entities": [
+      "바이오비쥬",
+      "신세계인터내셔날",
+      "화승엔터프라이즈"
+    ],
+    "issue": "하나 미래산업팀 소비 산업 보고서에서 관심 종목으로 소개. 보고서 선택이며 투자 추천으로 재해석하지 않음.",
+    "links": [
+      "https://t.me/hanasmallcap/1207"
+    ]
+  },
+  {
+    "entities": [
+      "펌텍코리아"
+    ],
+    "issue": "IBK 기업 보고서의 K뷰티 수요와 생산능력 증설 전망.",
+    "links": [
+      "https://t.me/Ibks_innovation_research/4247"
+    ]
+  },
+  {
+    "entities": [
+      "삼성바이오로직스"
+    ],
+    "issue": "실적 비교와 공장 가동·인수 관련 전망.",
+    "links": [
+      "https://t.me/sejongdata2013/12334",
+      "https://t.me/Ibks_innovation_research/4253"
+    ]
+  },
+  {
+    "entities": [
+      "삼성중공업"
+    ],
+    "issue": "IBK 보고서의 실적·환헤지·해양 프로젝트 전망.",
+    "links": [
+      "https://t.me/Ibks_innovation_research/4255"
+    ]
+  },
+  {
+    "entities": [
+      "브이티"
+    ],
+    "issue": "IBK 보고서의 해외 유통 채널 확대와 화장품 사업 전망.",
+    "links": [
+      "https://t.me/Ibks_innovation_research/4257"
+    ]
+  },
+  {
+    "entities": [
+      "현대모비스",
+      "현대차",
+      "기아"
+    ],
+    "issue": "자동차·로봇 사업 및 밸류에이션 비교. 모비스 표기는 현대모비스로 통합.",
+    "links": [
+      "https://t.me/eng999view/8894",
+      "https://t.me/eng999view/8897",
+      "https://t.me/eng999view/8906",
+      "https://t.me/eng999view/8907"
+    ]
+  },
+  {
+    "entities": [
+      "대한광통신",
+      "오이솔루션",
+      "우리로",
+      "옵티코어",
+      "코닝",
+      "시에나",
+      "파브리넷"
+    ],
+    "issue": "광통신 공급망과 국내외 기업을 비교한 산업 해설.",
+    "links": [
+      "https://t.me/eng999view/8896"
+    ]
+  },
+  {
+    "entities": [
+      "SK하이닉스"
+    ],
+    "issue": "IBK 메모리 전망 및 솔리다임 IPO 예상 글. 전망·일정은 미검증.",
+    "links": [
+      "https://t.me/Ibks_innovation_research/4250",
+      "https://t.me/eng999view/8922"
+    ]
+  },
+  {
+    "entities": [
+      "LG에너지솔루션",
+      "CATL",
+      "BYD"
+    ],
+    "issue": "키움이 전달한 글로벌 전기차 배터리 사용량과 제조사 점유율 비교. 통계 수치는 원문 출처 검증 전의 채널 전달 내용.",
+    "links": [
+      "https://t.me/kiwoom_semibat/18444"
+    ]
+  }
+]

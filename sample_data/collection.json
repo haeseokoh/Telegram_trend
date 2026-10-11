@@ -1,0 +1,299 @@
+{
+  "collection_started_at_utc": "2026-10-11T03:00:03.419297+00:00",
+  "collected_at_utc": "2026-10-11T03:00:58.849010+00:00",
+  "start_kst": "2026-10-05T00:00:00+09:00",
+  "end_exclusive_kst": "2026-10-12T00:00:00+09:00",
+  "channels": [
+    {
+      "channel": "infomarketopen",
+      "actual_name": "인포마켓 infomarket",
+      "pages": [
+        {
+          "url": "https://t.me/s/infomarketopen",
+          "status": 200,
+          "posts": 19
+        },
+        {
+          "url": "https://t.me/s/infomarketopen?before=52339",
+          "status": 200,
+          "posts": 19
+        },
+        {
+          "url": "https://t.me/s/infomarketopen?before=52318",
+          "status": 200,
+          "posts": 20
+        },
+        {
+          "url": "https://t.me/s/infomarketopen?before=52297",
+          "status": 200,
+          "posts": 20
+        },
+        {
+          "url": "https://t.me/s/infomarketopen?before=52277",
+          "status": 200,
+          "posts": 20
+        },
+        {
+          "url": "https://t.me/s/infomarketopen?before=52257",
+          "status": 200,
+          "posts": 20
+        },
+        {
+          "url": "https://t.me/s/infomarketopen?before=52237",
+          "status": 200,
+          "posts": 20
+        },
+        {
+          "url": "https://t.me/s/infomarketopen?before=52217",
+          "status": 200,
+          "posts": 20
+        },
+        {
+          "url": "https://t.me/s/infomarketopen?before=52197",
+          "status": 200,
+          "posts": 20
+        },
+        {
+          "url": "https://t.me/s/infomarketopen?before=52177",
+          "status": 200,
+          "posts": 20
+        },
+        {
+          "url": "https://t.me/s/infomarketopen?before=52156",
+          "status": 200,
+          "posts": 20
+        },
+        {
+          "url": "https://t.me/s/infomarketopen?before=52134",
+          "status": 200,
+          "posts": 20
+        },
+        {
+          "url": "https://t.me/s/infomarketopen?before=52113",
+          "status": 200,
+          "posts": 20
+        },
+        {
+          "url": "https://t.me/s/infomarketopen?before=52093",
+          "status": 200,
+          "posts": 20
+        },
+        {
+          "url": "https://t.me/s/infomarketopen?before=52071",
+          "status": 200,
+          "posts": 20
+        },
+        {
+          "url": "https://t.me/s/infomarketopen?before=52050",
+          "status": 200,
+          "posts": 20
+        },
+        {
+          "url": "https://t.me/s/infomarketopen?before=52030",
+          "status": 200,
+          "posts": 20
+        },
+        {
+          "url": "https://t.me/s/infomarketopen?before=52010",
+          "status": 200,
+          "posts": 20
+        },
+        {
+          "url": "https://t.me/s/infomarketopen?before=51990",
+          "status": 200,
+          "posts": 18
+        },
+        {
+          "url": "https://t.me/s/infomarketopen?before=51970",
+          "status": 200,
+          "posts": 20
+        },
+        {
+          "url": "https://t.me/s/infomarketopen?before=51950",
+          "status": 200,
+          "posts": 19
+        },
+        {
+          "url": "https://t.me/s/infomarketopen?before=51929",
+          "status": 200,
+          "posts": 20
+        }
+      ],
+      "retrieved_posts": 435,
+      "period_posts": 417,
+      "earliest_retrieved": "2026-10-04T20:26:27+09:00",
+      "latest_retrieved": "2026-10-11T08:44:29+09:00",
+      "started_at_utc": "2026-10-11T03:00:03.419297+00:00",
+      "finished_at_utc": "2026-10-11T03:00:40.489040+00:00",
+      "coverage_complete": true,
+      "stop_reason": "start_boundary_reached",
+      "error": null
+    },
+    {
+      "channel": "hslpartners",
+      "actual_name": "IT의 신 이형수",
+      "pages": [
+        {
+          "url": "https://t.me/s/hslpartners",
+          "status": 200,
+          "posts": 19
+        },
+        {
+          "url": "https://t.me/s/hslpartners?before=9638",
+          "status": 200,
+          "posts": 19
+        }
+      ],
+      "retrieved_posts": 38,
+      "period_posts": 22,
+      "earliest_retrieved": "2026-10-01T08:04:35+09:00",
+      "latest_retrieved": "2026-10-11T11:17:19+09:00",
+      "started_at_utc": "2026-10-11T03:00:40.490062+00:00",
+      "finished_at_utc": "2026-10-11T03:00:43.738440+00:00",
+      "coverage_complete": true,
+      "stop_reason": "start_boundary_reached",
+      "error": null
+    },
+    {
+      "channel": "eqmirae",
+      "actual_name": "[미래에셋증권 전략/퀀트 유명간]",
+      "pages": [
+        {
+          "url": "https://t.me/s/eqmirae",
+          "status": 200,
+          "posts": 20
+        }
+      ],
+      "retrieved_posts": 20,
+      "period_posts": 4,
+      "earliest_retrieved": "2026-09-25T13:56:46+09:00",
+      "latest_retrieved": "2026-10-08T07:37:55+09:00",
+      "started_at_utc": "2026-10-11T03:00:43.739905+00:00",
+      "finished_at_utc": "2026-10-11T03:00:45.116308+00:00",
+      "coverage_complete": true,
+      "stop_reason": "start_boundary_reached",
+      "error": null
+    },
+    {
+      "channel": "sejongdata2013",
+      "actual_name": "세종기업데이터",
+      "pages": [
+        {
+          "url": "https://t.me/s/sejongdata2013",
+          "status": 200,
+          "posts": 19
+        }
+      ],
+      "retrieved_posts": 19,
+      "period_posts": 14,
+      "earliest_retrieved": "2026-10-02T10:18:08+09:00",
+      "latest_retrieved": "2026-10-09T04:39:42+09:00",
+      "started_at_utc": "2026-10-11T03:00:45.117580+00:00",
+      "finished_at_utc": "2026-10-11T03:00:46.525509+00:00",
+      "coverage_complete": true,
+      "stop_reason": "start_boundary_reached",
+      "error": null
+    },
+    {
+      "channel": "kiwoom_semibat",
+      "actual_name": "키움 반도체,이차전지 PRIME ☀️",
+      "pages": [
+        {
+          "url": "https://t.me/s/kiwoom_semibat",
+          "status": 200,
+          "posts": 15
+        },
+        {
+          "url": "https://t.me/s/kiwoom_semibat?before=18467",
+          "status": 200,
+          "posts": 16
+        },
+        {
+          "url": "https://t.me/s/kiwoom_semibat?before=18447",
+          "status": 200,
+          "posts": 16
+        }
+      ],
+      "retrieved_posts": 47,
+      "period_posts": 40,
+      "earliest_retrieved": "2026-10-02T07:47:47+09:00",
+      "latest_retrieved": "2026-10-08T20:18:13+09:00",
+      "started_at_utc": "2026-10-11T03:00:46.526548+00:00",
+      "finished_at_utc": "2026-10-11T03:00:51.189684+00:00",
+      "coverage_complete": true,
+      "stop_reason": "start_boundary_reached",
+      "error": null
+    },
+    {
+      "channel": "hanasmallcap",
+      "actual_name": "하나 미래산업팀(스몰캡)",
+      "pages": [
+        {
+          "url": "https://t.me/s/hanasmallcap",
+          "status": 200,
+          "posts": 20
+        }
+      ],
+      "retrieved_posts": 20,
+      "period_posts": 1,
+      "earliest_retrieved": "2026-08-14T20:22:05+09:00",
+      "latest_retrieved": "2026-10-08T20:01:45+09:00",
+      "started_at_utc": "2026-10-11T03:00:51.190714+00:00",
+      "finished_at_utc": "2026-10-11T03:00:52.711842+00:00",
+      "coverage_complete": true,
+      "stop_reason": "start_boundary_reached",
+      "error": null
+    },
+    {
+      "channel": "Ibks_innovation_research",
+      "actual_name": "IBK투자증권 기업분석부",
+      "pages": [
+        {
+          "url": "https://t.me/s/Ibks_innovation_research",
+          "status": 200,
+          "posts": 20
+        }
+      ],
+      "retrieved_posts": 20,
+      "period_posts": 10,
+      "earliest_retrieved": "2026-10-01T07:53:39+09:00",
+      "latest_retrieved": "2026-10-08T16:21:16+09:00",
+      "started_at_utc": "2026-10-11T03:00:52.712807+00:00",
+      "finished_at_utc": "2026-10-11T03:00:54.082719+00:00",
+      "coverage_complete": true,
+      "stop_reason": "start_boundary_reached",
+      "error": null
+    },
+    {
+      "channel": "eng999view",
+      "actual_name": "엔지니어뷰",
+      "pages": [
+        {
+          "url": "https://t.me/s/eng999view",
+          "status": 200,
+          "posts": 20
+        },
+        {
+          "url": "https://t.me/s/eng999view?before=8903",
+          "status": 200,
+          "posts": 20
+        },
+        {
+          "url": "https://t.me/s/eng999view?before=8883",
+          "status": 200,
+          "posts": 20
+        }
+      ],
+      "retrieved_posts": 60,
+      "period_posts": 49,
+      "earliest_retrieved": "2026-09-30T22:29:58+09:00",
+      "latest_retrieved": "2026-10-10T12:48:16+09:00",
+      "started_at_utc": "2026-10-11T03:00:54.082719+00:00",
+      "finished_at_utc": "2026-10-11T03:00:58.838268+00:00",
+      "coverage_complete": true,
+      "stop_reason": "start_boundary_reached",
+      "error": null
+    }
+  ],
+  "packaged_sample": true
+}

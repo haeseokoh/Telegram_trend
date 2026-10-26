@@ -2,6 +2,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from datetime import date
 from unittest.mock import Mock, patch
 from fastapi.testclient import TestClient
 from app import ai, service
@@ -13,6 +14,7 @@ class AITests(unittest.TestCase):
         fixture=Path(__file__).resolve().parents[1]/'sample_data'
         data_patch=patch.object(service,'DATA',fixture); data_patch.start(); self.addCleanup(data_patch.stop)
         from app import channel_manager
+        clock_patch=patch.object(channel_manager,'today_kst',return_value=date(2026,10,11)); clock_patch.start(); self.addCleanup(clock_patch.stop)
         data=service.load()
         channel_patch=patch.object(channel_manager,'channels',return_value=[{'id':c['channel'],'name':c['actual_name'],'enabled':True} for c in data['meta']['channels']]); channel_patch.start(); self.addCleanup(channel_patch.stop)
         self.client=TestClient(app)

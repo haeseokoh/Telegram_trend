@@ -3,6 +3,7 @@ import io
 import unittest
 import json
 from pathlib import Path
+from datetime import date
 from unittest.mock import patch
 from app import service, channel_manager
 import app.main as main_module
@@ -20,9 +21,13 @@ class DashboardTests(unittest.TestCase):
         cls.registry_patch=patch.object(channel_manager,'channels',return_value=[{'id':c['channel'],'name':c['actual_name'],'enabled':True} for c in data['meta']['channels']]); cls.registry_patch.start()
         cls.snapshot_patch=patch.object(main_module,'snapshot',data); cls.snapshot_patch.start()
         cls.client = TestClient(app)
+        cls.clock_patch=patch.object(channel_manager,'today_kst',return_value=date(2026,10,11)); cls.clock_patch.start()
+        cls.busy_patch=patch.object(channel_manager,'is_busy',return_value=False); cls.busy_patch.start()
 
     @classmethod
     def tearDownClass(cls):
+        cls.busy_patch.stop()
+        cls.clock_patch.stop()
         cls.snapshot_patch.stop(); cls.registry_patch.stop(); cls.data_patch.stop()
 
     def dashboard(self, **params):

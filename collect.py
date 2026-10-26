@@ -5,10 +5,9 @@ from bs4 import BeautifulSoup
 ROOT=Path(__file__).resolve().parent
 OUT=Path(os.environ.get('TELEGRAM_DATA_DIR',str(ROOT/'data'))); OUT.mkdir(exist_ok=True)
 KST=timezone(timedelta(hours=9))
-saved_meta=json.loads((OUT/'collection.json').read_text(encoding='utf-8')) if (OUT/'collection.json').exists() else {}
 today=datetime.now(KST).date()
-START=datetime.fromisoformat(os.getenv('TELEGRAM_START',saved_meta.get('default_start_kst',saved_meta.get('start_kst',str(today-timedelta(days=6)))))).replace(tzinfo=KST)
-END=datetime.fromisoformat(os.getenv('TELEGRAM_END_EXCLUSIVE',saved_meta.get('default_end_exclusive_kst',saved_meta.get('end_exclusive_kst',str(today+timedelta(days=1)))))).replace(tzinfo=KST)
+START=datetime.fromisoformat(os.getenv('TELEGRAM_START',str(today-timedelta(days=6)))).replace(tzinfo=KST)
+END=datetime.fromisoformat(os.getenv('TELEGRAM_END_EXCLUSIVE',str(today+timedelta(days=1)))).replace(tzinfo=KST)
 def collect(channel, start=None, end=None, out=None, progress=None):
     first=start or START; last=end or END; target=Path(out or OUT); target.mkdir(parents=True,exist_ok=True)
     records={}; pages=[]; before=None; actual_name=None; error=None; reason='page_limit'
@@ -50,9 +49,9 @@ if __name__=='__main__':
     from app import channel_manager
     if OUT.resolve()!=channel_manager.DATA.resolve():
         raise SystemExit('CLI 수집은 기본 data 폴더를 사용합니다. 기간은 TELEGRAM_START/TELEGRAM_END_EXCLUSIVE로 지정하세요.')
-    if any(j['status'] in ('queued','running','analyzing') for j in channel_manager.jobs()):
-        raise SystemExit('실행 중인 수집 작업이 있습니다. 완료 후 다시 실행하세요.')
     channel_manager.recover_jobs()
+    if channel_manager.is_busy():
+        raise SystemExit('실행 중인 수집 작업이 있습니다. 완료 후 다시 실행하세요.')
     for entry in channel_manager.channels():
         if not entry['enabled']: continue
         job=channel_manager.start_collection(entry['id'],START.date().isoformat(),(END-timedelta(days=1)).date().isoformat(),lambda:None)

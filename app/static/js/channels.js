@@ -15,14 +15,24 @@ async function refreshChannelConfig() {
 function renderManager(state) {
   managerState=state;
   const busy=busyJobs(state.jobs);
+  $('collect-latest').disabled=busy;
+  $('collect-latest').textContent=busy?'Telegram 수집·분석 중…':'↻ 최신 데이터 수집';
+  const batch=state.jobs.find(j=>j.kind==='refresh');
+  const instruction='자동 수집은 꺼져 있습니다. 최신 데이터 수집은 활성 채널 전체를 Telegram에서 수집합니다. 화면 조회·저장 데이터 다시 읽기는 수집하지 않습니다.';
+  const historical=config&&$('end').value<config.end?' 현재 과거 기간을 보고 있습니다. ‘최근 7일 보기’로 이동하세요.':'';
+  $('refresh-status').textContent=instruction+(batch?` 최근 전체 갱신: ${jobLabels[batch.status]} · ${batch.completed_channels||0}/${batch.plans.length}채널${batch.finished_at_utc?' · '+localTime(batch.finished_at_utc)+' KST':''}${batch.new_posts!==undefined?' · 신규 '+num(batch.new_posts)+'건':''}${batch.error?' · '+batch.error:''}`:'')+historical;
   $('managed-channels').innerHTML=state.channels.map(c=>`<article class="managed-channel"><div><strong>${escape(c.name)}</strong><span class="pill">${c.enabled?'활성':'비활성'}</span><p>@${escape(c.id)} · 보존 메시지 ${num(c.stored_posts)}건</p><p>${c.coverage_ranges.length?c.coverage_ranges.map(r=>`${escape(r.start_kst.slice(0,10))} ~ ${escape(new Date(new Date(r.end_exclusive_kst.slice(0,10)+'T00:00:00Z').getTime()-86400000).toISOString().slice(0,10))} ${r.coverage_complete?'경계 확인':'일부 수집'}`).join('<br>'):'미수집 · 원하는 기간을 수집하세요.'}</p></div><div class="channel-actions"><button class="theme-toggle-btn" data-channel-toggle="${escape(c.id)}" data-enabled="${!c.enabled}">${c.enabled?'비활성화':'재활성화'}</button><button class="btn-primary" data-channel-collect="${escape(c.id)}" ${busy?'disabled':''}>선택 기간 수집</button></div></article>`).join('');
-  $('collection-jobs').innerHTML=state.jobs.length?state.jobs.slice(0,15).map(j=>`<article class="collection-job"><strong>${escape(channelNames[j.channel]||j.channel)} · ${escape(jobLabels[j.status]||j.status)}</strong><p>${escape(j.start)} ~ ${escape(j.end)} · HTML ${j.pages}페이지 · 경계 포함 ${num(j.retrieved_posts)}건${j.period_posts!==undefined?` · 기간 내 ${num(j.period_posts)}건`:''}${j.new_posts!==undefined?` · 신규 ${num(j.new_posts)}건`:''}</p>${j.oldest_kst?`<p>도달한 가장 오래된 글: ${escape(localTime(j.oldest_kst))} KST</p>`:''}${j.error?`<p class="job-error">${escape(j.error)}</p>`:''}${j.status==='partial'?`<p class="job-error">${escape(stopLabels[j.stop_reason]||j.stop_reason)} · 미확인 기간은 완료로 표시하지 않습니다.</p>`:''}</article>`).join(''):'<p class="card-hint">아직 실행한 수집 작업이 없습니다.</p>';
+  $('collection-jobs').innerHTML=state.jobs.length?state.jobs.slice(0,15).map(j=>`<article class="collection-job"><strong>${escape(j.kind==='refresh'?'활성 채널 전체':channelNames[j.channel]||j.channel)} · ${escape(jobLabels[j.status]||j.status)}</strong><p>${escape(j.start)} ~ ${escape(j.end)} · HTML ${j.pages}페이지 · 경계 포함 ${num(j.retrieved_posts)}건${j.period_posts!==undefined?` · 기간 내 ${num(j.period_posts)}건`:''}${j.new_posts!==undefined?` · 신규 ${num(j.new_posts)}건`:''}</p>${j.oldest_kst?`<p>도달한 가장 오래된 글: ${escape(localTime(j.oldest_kst))} KST</p>`:''}${j.error?`<p class="job-error">${escape(j.error)}</p>`:''}${j.status==='partial'&&j.kind!=='refresh'?`<p class="job-error">${escape(stopLabels[j.stop_reason]||j.stop_reason)} · 미확인 기간은 완료로 표시하지 않습니다.</p>`:''}</article>`).join(''):'<p class="card-hint">아직 실행한 수집 작업이 없습니다.</p>';
 }
 async function pollChannels() {
   clearTimeout(channelPoll);
   try {
     const state=await api('/api/channels'); renderManager(state);
     const previous=knownJobs; knownJobs=new Map(state.jobs.map(j=>[j.id,j.status]));
+    // CLI collection writes the same files but cannot publish this server's memory snapshot.
+    if(!busyJobs(state.jobs)&&(!previous||state.jobs.some(j=>previous.has(j.id)&&previous.get(j.id)!==j.status))){
+      await api('/api/reload',{method:'POST'});await refreshChannelConfig();
+    }
     if(previous){
       const finished=state.jobs.filter(j=>previous.has(j.id)&&previous.get(j.id)!==j.status&&['completed','partial','failed','interrupted'].includes(j.status));
       if(finished.length){
@@ -30,13 +40,29 @@ async function pollChannels() {
         for(const j of finished)notify(`${j.channel}: ${jobLabels[j.status]}${j.period_posts!==undefined?' · 기간 내 '+j.period_posts+'건':''}`);
       }
     }
-    if(busyJobs(state.jobs)||$('channel-manager').open)channelPoll=setTimeout(pollChannels,2500);
-  }catch(e){$('manager-message').textContent=e.message;if($('channel-manager').open)channelPoll=setTimeout(pollChannels,5000);}
+    channelPoll=setTimeout(pollChannels,busyJobs(state.jobs)||$('channel-manager').open?2500:30000);
+  }catch(e){$('manager-message').textContent=e.message;$('refresh-status').textContent='수집 상태 확인 실패: '+e.message;channelPoll=setTimeout(pollChannels,10000);}
 }
 async function channelAction(path,method,body) {
   return api(path,{method,headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
 }
 document.addEventListener('DOMContentLoaded',()=>{
+  $('collect-latest').addEventListener('click',async()=>{
+    $('collect-latest').disabled=true;
+    try {
+      const job=await channelAction('/api/collect-latest','POST',{});
+      if(!knownJobs)knownJobs=new Map();knownJobs.set(job.id,'queued');
+      await refreshChannelConfig();
+      $('start').value=config.start;$('end').value=config.end;
+      document.querySelectorAll('[name=channel]').forEach(c=>c.checked=true);
+      await loadDashboard();await pollChannels();
+      notify('활성 채널 전체 수집을 시작했습니다. 완료 후 분석 결과를 반영합니다. 서버는 켜 두세요.');
+    }catch(e){showError(e.message);await pollChannels();}
+  });
+  $('recent-period').addEventListener('click',async()=>{
+    try{config=await api('/api/config');$('start').value=config.start;$('end').value=config.end;await loadDashboard();await pollChannels();}
+    catch(e){showError(e.message);}
+  });
   $('manage-channels').addEventListener('click',()=>{
     $('collect-start').value=$('start').value;$('collect-end').value=$('end').value;
     $('manager-message').textContent='';$('channel-manager').showModal();pollChannels();

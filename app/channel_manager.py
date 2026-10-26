@@ -23,6 +23,74 @@ job_lock=Lock()
 running=False
 
 
+def today_kst():
+    return datetime.now(timezone(timedelta(hours=9))).date()
+
+
+def recent_period():
+    today=today_kst()
+    return {'start':str(today-timedelta(days=6)),'end':str(today)}
+
+
+def start_refresh(on_complete):
+    """Reserve one durable batch; child jobs retain independent failure/coverage evidence."""
+    global running
+    active=[c['id'] for c in channels() if c['enabled']]
+    if not active: raise ChannelError('활성 채널이 없습니다. 채널 관리에서 활성화하세요.')
+    today=today_kst()
+    meta=read_json(DATA/'collection.json',{})
+    plans=[]
+    for ch in active:
+        saved=next((c for c in meta.get('channels',[]) if c['channel']==ch),None)
+        ranges=coverage_ranges(meta,saved) if saved else []
+        # Resume from the last fully traversed range, including its partial final day.
+        ends=[date.fromisoformat(r['end_exclusive_kst'][:10])-timedelta(days=1)
+              for r in ranges if r.get('coverage_complete')]
+        start=min(max(ends) if ends else today-timedelta(days=6),today-timedelta(days=6))
+        start=max(start,today-timedelta(days=366))
+        plans.append({'channel':ch,'start':str(start),'end':str(today)})
+    with job_lock:
+        if running or any(j['status'] in ('queued','running','analyzing') and owner_alive(j) for j in read_json(JOBS,[])):
+            raise ChannelError('다른 수집·분석 작업이 진행 중입니다. 완료 후 다시 실행하세요.',409)
+        batch={'id':uuid.uuid4().hex,'channel':'active','kind':'refresh','plans':plans,
+               'start':min(p['start'] for p in plans),'end':str(today),
+               'status':'queued','created_at_utc':datetime.now(timezone.utc).isoformat(),
+               'owner_pid':os.getpid(),'pages':0,'retrieved_posts':0,'error':None}
+        rows=read_json(JOBS,[]); rows.append(batch); save_json(JOBS,rows[-100:])
+        running=True
+    Thread(target=refresh_worker,args=(batch,on_complete),daemon=True).start()
+    return batch
+
+
+def refresh_worker(batch,on_complete):
+    global running
+    try:
+        update_job(batch['id'],status='running')
+        results=[]
+        for plan in batch['plans']:
+            child={**plan,'id':uuid.uuid4().hex,'batch_id':batch['id'],'status':'queued',
+                   'created_at_utc':datetime.now(timezone.utc).isoformat(),'owner_pid':os.getpid(),
+                   'pages':0,'retrieved_posts':0,'error':None}
+            with job_lock:
+                rows=read_json(JOBS,[]); rows.append(child); save_json(JOBS,rows[-100:])
+            update_job(batch['id'],current_channel=plan['channel'])
+            worker(child,on_complete)
+            result=next(j for j in jobs() if j['id']==child['id'])
+            results.append(result)
+            update_job(batch['id'],completed_channels=len(results),
+                       pages=sum(j['pages'] for j in results),retrieved_posts=sum(j['retrieved_posts'] for j in results))
+        failed=[j for j in results if j['status']!='completed']
+        update_job(batch['id'],status='completed' if not failed else 'partial',
+                   new_posts=sum(j.get('new_posts',0) for j in results),
+                   error=' · '.join(j['channel']+': '+(j.get('error') or j['status']) for j in failed) or None,
+                   finished_at_utc=datetime.now(timezone.utc).isoformat())
+    except Exception:
+        update_job(batch['id'],status='failed',error='전체 갱신이 중단됐습니다. 채널별 작업 기록을 확인하세요.',
+                   finished_at_utc=datetime.now(timezone.utc).isoformat())
+    finally:
+        with job_lock: running=False
+
+
 class ChannelError(Exception):
     def __init__(self,message,status=422):
         self.status=status
@@ -210,6 +278,9 @@ def worker(job,on_complete):
         meta['channels']=[c for c in meta['channels'] if c['channel']!=ch]+[stat] if not old else [stat if c['channel']==ch else c for c in meta['channels']]
         meta['start_kst']=min(meta['start_kst'],first.isoformat()); meta['end_exclusive_kst']=max(meta['end_exclusive_kst'],last.isoformat())
         meta['collected_at_utc']=stat['finished_at_utc']
+        if meta.get('packaged_sample'):
+            meta['sample_source_urls']=[p['url'] for p in original]
+        meta['packaged_sample']=False
         save_json(stage/'posts.json',posts); save_json(stage/'collection.json',meta)
         env={**os.environ,'TELEGRAM_DATA_DIR':str(stage),'PYTHONIOENCODING':'utf-8','TELEGRAM_WRITE_REPORT':'0'}
         for script in ('analyze.py','report.py'):

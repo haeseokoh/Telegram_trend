@@ -46,10 +46,17 @@ foreign={
 other={'SpaceX':['스페이스X','SpaceX','SPCX'],'OpenAI':['오픈AI','OpenAI'],'Anthropic':['앤스로픽','앤트로픽','Anthropic'],'Anduril':['안두릴','Anduril']}
 domestic=['삼성전자','SK하이닉스','삼성전기','한미반도체','티에스이','이수페타시스','대덕전자','삼성증권','테크윙','한솔케미칼','파두']
 for p in rows:
-    if p['channel']=='eqmirae':
+    if p['channel']=='eqmirae' and '퀀트 Daily' in p['text'][:150]:
+        company_section=False
         for line in p['text'].splitlines():
-            if ',' in line and not any(s in line for s in ['[','기준','10/','2026','(',')',':','/']):
-                domestic += [s.strip() for s in line.split(',') if s.strip()]
+            line=line.strip()
+            if line.startswith('('):
+                company_section=bool(re.fullmatch(r'\((?:상향|하향|외국인|기관|신용잔고비율|공매도잔고비율)[^():,]*\)',line))
+            elif company_section and ',' in line:
+                names=[s.strip() for s in line.split(',')]
+                if all(re.fullmatch(r'[가-힣A-Za-z][가-힣A-Za-z0-9 &.\-]{0,39}',s) for s in names):
+                    domestic+=names
+                company_section=False
 aliases={**foreign,**{s:[s] for s in sorted(set(domestic))},**other}
 for filename in ['domestic_aliases.json','foreign_aliases.json']:
     extra=ROOT/filename
@@ -74,8 +81,11 @@ for p in rows:
     if n:
         for i,old in enumerate(normalized):
             if n==old: cid=i; reason='normalized_exact'; break
-            if len(n)>=100 and len(old)>=100 and abs(len(n)-len(old))/max(len(n),len(old))<=.1 and SequenceMatcher(None,n,old,autojunk=False).ratio()>=.94:
-                cid=i; reason='near_text_0.94'; break
+            if len(n)>=100 and len(old)>=100 and abs(len(n)-len(old))/max(len(n),len(old))<=.1:
+                matcher=SequenceMatcher(None,n,old,autojunk=False)
+                # quick_ratio is an upper bound: reject impossible matches without changing clusters.
+                if matcher.quick_ratio()>=.94 and matcher.ratio()>=.94:
+                    cid=i; reason='near_text_0.94'; break
     if cid is None: cid=len(clusters); clusters.append([]); normalized.append(n)
     clusters[cid].append(p['url']); p['duplicate_cluster']=f'C{cid+1:04}'; p['duplicate_reason']=reason
     assignments[p['url']]=p

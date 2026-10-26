@@ -4,6 +4,7 @@ import threading
 import time
 import unittest
 from pathlib import Path
+from datetime import date
 from unittest.mock import Mock, patch
 from fastapi.testclient import TestClient
 from app import channel_manager as cm, service
@@ -18,6 +19,47 @@ class ChannelManagementTests(unittest.TestCase):
             p=patch.object(cm,key,value); p.start(); self.addCleanup(p.stop)
         cm.save_json(cm.REGISTRY,[{'id':'samplechan','name':'샘플','enabled':True}])
         self.client=TestClient(app)
+
+    def test_recent_defaults_roll_forward_and_explicit_history_still_works(self):
+        with patch.object(cm,'today_kst',return_value=date(2026,10,26)):
+            config=self.client.get('/api/config').json()
+            self.assertEqual((config['start'],config['end']),('2026-10-20','2026-10-26'))
+            self.assertFalse(config['automatic_collection'])
+            self.assertEqual(self.client.get('/api/dashboard').json()['filters']['end'],'2026-10-26')
+            self.assertEqual(self.client.get('/api/dashboard?start=2026-10-05&end=2026-10-11').json()['filters']['end'],'2026-10-11')
+        with patch.object(cm,'today_kst',return_value=date(2026,10,27)):
+            self.assertEqual(self.client.get('/api/config').json()['end'],'2026-10-27')
+
+    def test_refresh_batch_resumes_overlap_skips_inactive_and_continues_failure(self):
+        cm.save_json(cm.REGISTRY,[{'id':x,'name':x,'enabled':x!='inactive'} for x in ('samplechan','newchannel','inactive')])
+        cm.save_json(self.data/'collection.json',{'start_kst':'2026-10-05','end_exclusive_kst':'2026-10-12',
+                     'collected_at_utc':'2026-10-11','channels':[{'channel':'samplechan','coverage_complete':True}]})
+        entered=threading.Event(); release=threading.Event(); seen=[]
+        def fake_worker(job,callback):
+            seen.append(job['channel']); entered.set(); release.wait(3)
+            cm.update_job(job['id'],status='failed' if len(seen)==1 else 'completed',error='network' if len(seen)==1 else None,new_posts=2)
+            with cm.job_lock: cm.running=False
+        with patch.object(cm,'today_kst',return_value=date(2026,10,26)),patch.object(cm,'worker',side_effect=fake_worker):
+            response=self.client.post('/api/collect-latest')
+            self.assertEqual(response.status_code,202); batch=response.json()
+            self.assertEqual(batch['plans'],[{'channel':'samplechan','start':'2026-10-11','end':'2026-10-26'},
+                                            {'channel':'newchannel','start':'2026-10-20','end':'2026-10-26'}])
+            self.assertTrue(entered.wait(1))
+            self.assertEqual(self.client.post('/api/collect-latest').status_code,409)
+            self.assertEqual(self.client.post('/api/channels/samplechan/collect',json={'start':'2026-10-20','end':'2026-10-26'}).status_code,409)
+            release.set()
+            for _ in range(100):
+                if not cm.is_busy(): break
+                time.sleep(.01)
+            result=next(j for j in cm.jobs() if j['id']==batch['id'])
+            self.assertEqual(seen,['samplechan','newchannel'])
+            self.assertEqual(result['status'],'partial'); self.assertEqual(result['completed_channels'],2)
+            self.assertIn('samplechan',result['error'])
+
+    def test_refresh_requires_active_channels_and_same_origin(self):
+        self.assertEqual(self.client.post('/api/collect-latest',headers={'Origin':'https://evil.example'}).status_code,403)
+        cm.set_enabled('samplechan',False)
+        self.assertEqual(self.client.post('/api/collect-latest').status_code,422)
 
     def test_telegram_input_and_ssrf_rejection(self):
         for value in ('@SampleChan','https://t.me/SampleChan','https://t.me/s/SampleChan','t.me/SampleChan'):

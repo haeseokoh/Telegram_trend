@@ -30,7 +30,11 @@ for path in D.rglob('*.html'):
     soup=BeautifulSoup(path.read_text(encoding='utf-8'),'html.parser')
     snapshot_ids.update('https://t.me/'+node['data-post'] for node in soup.select('.tgme_widget_message[data-post]'))
 checks['saved_text_hashes']=all(hashlib.sha256(p['text'].encode()).hexdigest()==p['text_sha256'] for p in posts)
-if not meta.get('packaged_sample'): checks['posts_present_in_html']=urls<=snapshot_ids
+if not meta.get('packaged_sample'):
+    sample_hashes={p['url']:p['text_sha256'] for p in json.loads((R/'sample_data'/'posts.json').read_text(encoding='utf-8'))}
+    sample_urls=set(meta.get('sample_source_urls',[]))
+    checks['posts_present_in_html']=all(p['url'] in snapshot_ids or
+        (p['url'] in sample_urls and p['text_sha256']==sample_hashes.get(p['url'])) for p in posts)
 manifest=[{'file':str(f.relative_to(R)).replace('\\','/'),'sha256':hashlib.sha256(f.read_bytes()).hexdigest(),'bytes':f.stat().st_size} for f in sorted(D.rglob('*')) if f.is_file() and f.name not in ['manifest.json','verification.json']]
 (D/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2),encoding='utf-8')
 result={'all_passed':all(checks.values()),'checks':checks,'period_posts':len(posts),'entity_post_mentions':len(mentions),'entities_with_mentions':len(ranking),'html_pages':len(list(D.rglob('*.html')))}

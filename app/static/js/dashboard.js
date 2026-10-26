@@ -54,7 +54,7 @@ function renderDashboard(data) {
   $('stat-mentions').textContent=`종목×게시물 ${num(s.entity_mentions)}건`;
   $('stat-top').textContent=first?.entity||'언급 없음';
   $('stat-top-sub').textContent=first?`${num(first.count)}${mode?'개 본문':'건'} · ${first.channel_count}개 채널`:'선택 범위에 데이터 없음';
-  $('updated').textContent=`수집 ${localTime(data.meta.collected_at_utc)} KST · 저장된 샘플`;
+  $('updated').textContent=`마지막 수집 ${localTime(data.meta.collected_at_utc)} KST${data.meta.packaged_sample?' · 초기 샘플':''}`;
   const top=r.slice(0,3).map(x=>`<strong>${escape(x.entity)} ${num(x.count)}${mode?'개 본문':'건'}</strong>`).join(', ');
   $('brief').innerHTML=first?`${top}의 언급이 많습니다. 현재 선택한 범위에서 종목 언급을 확인한 메시지는 <strong>${num(s.counted_posts)}건</strong>입니다. 원시 횟수와 유사 본문을 함께 비교하면 반복 게시의 영향을 구분할 수 있습니다.`:'선택 범위에 집계할 종목 언급이 없습니다. 날짜·채널·분류 필터를 조정하세요.';
   const sampleEnd=data.meta.end_exclusive_kst.slice(0,10), captured=localTime(data.meta.collected_at_utc).slice(0,10);
@@ -64,6 +64,7 @@ function renderDashboard(data) {
   $('rankings').innerHTML=r.length?r.slice(0,10).map((x,i)=>`<button class="rank-row" data-entity="${escape(x.entity)}"><span class="rank-index">${String(i+1).padStart(2,'0')}</span><span class="rank-name">${escape(x.entity)}<span class="rank-meta">${x.channel_count}개 채널 · 원시 ${x.raw}건 / 본문 ${x.clusters}개${x.list?' · 목록 '+x.list+'건':''}</span></span><span class="rank-bar"><span style="width:${100*x.count/first.count}%"></span></span><span class="rank-count">${x.count}<small>${mode?'개':'건'}</small></span></button>`).join(''):'<p class="empty">언급 데이터가 없습니다.</p>';
   $('cloud').innerHTML=r.length?r.slice(0,30).map(x=>`<button data-entity="${escape(x.entity)}" style="font-size:${Math.round(13+27*Math.sqrt(x.count/first.count))}px" title="${escape(x.entity)}: ${x.count}${mode?'개 본문':'건'}">${escape(x.entity)}</button>`).join(''):'<p class="empty">선택 범위에 종목이 없습니다.</p>';
   renderChart(data); renderChannels(data); renderIssues(data);
+  if(typeof managerState!=='undefined'&&managerState)renderManager(managerState);
 }
 function chartMarkup(data) {
   if(!data.timeline.length||!data.timeline.some(s=>s.values.some(v=>v)))return '<p class="empty">표시할 언급 추이가 없습니다.</p>';
@@ -139,7 +140,7 @@ async function openPost(path) {
 }
 function showMethod() {
   ++modalId;
-  openDialog('집계 기준과 수집 범위',`<div class="detail-section"><h3>언급 게시물 수</h3><p>같은 메시지에서 같은 종목은 1회 집계합니다. 종목별 빈도(%)는 언급 게시물 수를 선택 범위 전체 수집 메시지 수로 나눈 값입니다. 여러 종목이 함께 나오므로 종목별 빈도의 합은 100%를 넘을 수 있습니다.</p></div><div class="detail-section"><h3>유사 본문 중복 제거</h3><p>공백·제로폭 문자 제거와 대소문자 통일 후 동일 본문, 또는 100자 이상·길이 차이 10% 이하·유사도 0.94 이상 본문을 묶습니다. 채널을 가로질러 집계하며, 필터를 적용한 뒤 각 종목·군집을 1회 셉니다. 일별 값은 선택 범위 안의 첫 게시일에 반영합니다.</p></div><div class="detail-section"><h3>목록과 분석 대상</h3><p>미래에셋 퀀트 Daily와 반도체 밸류 체인 시세 글을 종목 목록으로 구분합니다. 첫 줄 언급은 주요 분석 대상의 참고 지표이며, 제목 위치나 주변 기업 비교 때문에 오차가 있습니다. 전달 글도 별도 메시지로 세되 본문 중복을 따로 확인합니다.</p></div><div class="detail-section"><h3>현재 저장 범위</h3><p>${current?escape(current.meta.start_kst.slice(0,10))+' ~ '+escape(new Date(new Date(current.meta.end_exclusive_kst.slice(0,10)+'T00:00:00Z').getTime()-86400000).toISOString().slice(0,10)):'불러오는 중'} KST. 채널마다 확보한 기간이 다르며 채널 관리에서 수집 경계를 확인하세요. 오늘은 수집 시점까지의 부분 일자입니다. 공개 웹 응답만 수집했으며 삭제·비공개 메시지, 이미지·PDF·영상 내부 및 링크 목적지 본문은 제외했습니다. 기간 밖을 조회해도 미수집 날짜에는 데이터가 없습니다.</p></div><div class="detail-section"><h3>해석의 한계</h3><p>샘플 종목 사전 기준이며 모든 종목을 전수 탐지한 결과는 아닙니다. 상장·티커 미검증 기업은 별도 선택으로 포함합니다. 게시물의 주장과 검증된 사실을 구분하며 비교 기간을 수집하지 않아 증가율은 표시하지 않습니다.</p></div><div class="detail-section"><h3>데이터 갱신</h3><p>상단 새로고침은 프로젝트에 저장된 분석 결과를 다시 읽습니다. 채널 관리에서 공개 채널을 등록하고 원하는 시작일·종료일을 지정해 선택 기간 수집을 실행하세요. 백그라운드에서 수집·분석하며 완료 후 자동 반영합니다. 비활성화는 메시지를 삭제하지 않습니다.</p></div>`);
+  openDialog('집계 기준과 수집 범위',`<div class="detail-section"><h3>언급 게시물 수</h3><p>같은 메시지에서 같은 종목은 1회 집계합니다. 종목별 빈도(%)는 언급 게시물 수를 선택 범위 전체 수집 메시지 수로 나눈 값입니다. 여러 종목이 함께 나오므로 종목별 빈도의 합은 100%를 넘을 수 있습니다.</p></div><div class="detail-section"><h3>유사 본문 중복 제거</h3><p>공백·제로폭 문자 제거와 대소문자 통일 후 동일 본문, 또는 100자 이상·길이 차이 10% 이하·유사도 0.94 이상 본문을 묶습니다. 채널을 가로질러 집계하며, 필터를 적용한 뒤 각 종목·군집을 1회 셉니다. 일별 값은 선택 범위 안의 첫 게시일에 반영합니다.</p></div><div class="detail-section"><h3>목록과 분석 대상</h3><p>미래에셋 퀀트 Daily와 반도체 밸류 체인 시세 글을 종목 목록으로 구분합니다. 첫 줄 언급은 주요 분석 대상의 참고 지표이며, 제목 위치나 주변 기업 비교 때문에 오차가 있습니다. 전달 글도 별도 메시지로 세되 본문 중복을 따로 확인합니다.</p></div><div class="detail-section"><h3>현재 저장 범위</h3><p>${current?escape(current.meta.start_kst.slice(0,10))+' ~ '+escape(new Date(new Date(current.meta.end_exclusive_kst.slice(0,10)+'T00:00:00Z').getTime()-86400000).toISOString().slice(0,10)):'불러오는 중'} KST. 채널마다 확보한 기간이 다르며 채널 관리에서 수집 경계를 확인하세요. 오늘은 수집 시점까지의 부분 일자입니다. 공개 웹 응답만 수집했으며 삭제·비공개 메시지, 이미지·PDF·영상 내부 및 링크 목적지 본문은 제외했습니다. 기간 밖을 조회해도 미수집 날짜에는 데이터가 없습니다.</p></div><div class="detail-section"><h3>해석의 한계</h3><p>샘플 종목 사전 기준이며 모든 종목을 전수 탐지한 결과는 아닙니다. 상장·티커 미검증 기업은 별도 선택으로 포함합니다. 게시물의 주장과 검증된 사실을 구분하며 비교 기간을 수집하지 않아 증가율은 표시하지 않습니다.</p></div><div class="detail-section"><h3>데이터 갱신</h3><p>기본 조회는 KST 오늘까지 최근 7일입니다. 최신 데이터 수집은 활성 채널 전체를 Telegram에서 실제 수집하고 최근 7일로 이동합니다. 자동·예약 수집은 없으며 앱을 다시 열거나 저장 데이터를 다시 읽는 것만으로 새 글을 가져오지 않습니다. 채널 관리에서 공개 채널을 등록하고 원하는 시작일·종료일을 지정해 선택 기간 수집을 실행하세요. 백그라운드에서 수집·분석하며 완료 후 자동 반영합니다. 비활성화는 메시지를 삭제하지 않습니다.</p></div>`);
 }
 document.addEventListener('click',event=>{
   const element=event.target.closest('[data-entity],[data-post],[data-explore]');if(!element)return;
@@ -176,7 +177,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
   $('reload').addEventListener('click',async()=>{
     $('reload').disabled=true;$('reload').textContent='저장 데이터 읽는 중…';
     try{await api('/api/reload',{method:'POST'});await loadDashboard();notify('저장된 분석 결과를 다시 읽었습니다.');}catch(err){showError(err.message);}
-    finally{$('reload').disabled=false;$('reload').textContent='↻ 저장 데이터 새로고침';}
+    finally{$('reload').disabled=false;$('reload').textContent='저장 데이터 다시 읽기';}
   });
   $('search').addEventListener('input',()=>{clearTimeout(searchTimer);searchTimer=setTimeout(()=>{page=1;loadPosts();},250);});
   $('kinds').addEventListener('click',e=>{const b=e.target.closest('[data-kind]');if(b){kind=b.dataset.kind;page=1;updateKinds();loadPosts();}});

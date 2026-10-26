@@ -66,6 +66,13 @@ def collect_channel(channel: str,request: Request,body: CollectionRequest):
 def collection_jobs():
     return {'jobs':channel_manager.jobs()}
 
+
+@app.post('/api/collect-latest',status_code=202)
+def collect_latest(request: Request):
+    ai_origin(request)
+    try: return channel_manager.start_refresh(publish_snapshot)
+    except channel_manager.ChannelError as e: raise HTTPException(e.status,str(e))
+
 class AIRequest(BaseModel):
     model: str | None = None
     refresh: bool = False
@@ -98,9 +105,9 @@ def ai_brief(request: Request, body: AIRequest, entity: str = ''):
 
 
 def filters(start=None, end=None, channels=None, mode='posts', exclude_pins=True, exclude_lists=False, scope='stocks'):
-    meta = snapshot['meta']
-    start = start or meta.get('default_start_kst',meta['start_kst'])[:10]
-    end = end or str(date.fromisoformat(meta.get('default_end_exclusive_kst',meta['end_exclusive_kst'])[:10])-timedelta(days=1))
+    period=channel_manager.recent_period()
+    start = start or period['start']
+    end = end or period['end']
     try:
         first, last = date.fromisoformat(start), date.fromisoformat(end)
     except ValueError:
@@ -145,8 +152,8 @@ def dashboard(request: Request, focus: str | None = None):
 def config():
     meta=snapshot['meta']
     return {'channels':[{'id':c['id'],'name':c['name']} for c in channel_manager.channels() if c['enabled']],
-            'start':meta.get('default_start_kst',meta['start_kst'])[:10],
-            'end':str(date.fromisoformat(meta.get('default_end_exclusive_kst',meta['end_exclusive_kst'])[:10])-timedelta(days=1))}
+            **channel_manager.recent_period(),'automatic_collection':False,
+            'collected_at_utc':meta['collected_at_utc']}
 
 
 @app.get('/api/posts')

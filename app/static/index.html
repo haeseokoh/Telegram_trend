@@ -11,17 +11,18 @@
 </head>
 <body class="theme-light">
   <header class="navbar">
-    <a class="brand" href="/" aria-label="대시보드 홈"><span class="brand-icon">↗</span><span><span class="brand-title">텔레그램 트렌드 인텔리전스</span><span class="brand-caption">TELEGRAM TREND INTELLIGENCE</span></span><span class="brand-badge">PUBLIC SAMPLE</span></a>
-    <div class="nav-actions"><button id="manage-channels" class="theme-toggle-btn">⚙ 채널 관리</button><button id="theme" class="theme-toggle-btn">☾ 다크 모드</button><button id="export" class="theme-toggle-btn">↓ CSV 내보내기</button><button id="reload" class="btn-primary">↻ 저장 데이터 새로고침</button></div>
+    <a class="brand" href="/" aria-label="대시보드 홈"><span class="brand-icon">↗</span><span><span class="brand-title">텔레그램 트렌드 인텔리전스</span><span class="brand-caption">TELEGRAM TREND INTELLIGENCE</span></span><span class="brand-badge">PUBLIC CHANNELS</span></a>
+    <div class="nav-actions"><button id="collect-latest" class="btn-primary">↻ 최신 데이터 수집</button><button id="manage-channels" class="theme-toggle-btn">⚙ 채널 관리</button><button id="theme" class="theme-toggle-btn">☾ 다크 모드</button><button id="export" class="theme-toggle-btn">↓ CSV 내보내기</button><button id="reload" class="theme-toggle-btn">저장 데이터 다시 읽기</button></div>
   </header>
   <main class="main-container">
     <div class="page-heading"><div><h1>채널의 관심을 데이터로 읽다</h1><p>종목별 언급, 반복되는 이슈, 원문 근거를 한 화면에서 확인하세요.</p></div><span id="updated" class="updated">저장 데이터를 불러오는 중…</span></div>
     <form id="filters" class="filter-panel" aria-label="분석 범위 필터">
       <div class="filter-top"><fieldset><legend>분석 채널</legend><div class="channel-options" id="channel-options">채널 목록을 불러오는 중…</div></fieldset>
-      <div class="date-options"><label>시작일<input type="date" id="start" required></label><span>—</span><label>종료일<input type="date" id="end" required></label><button type="submit" class="btn-primary">범위 적용</button></div></div>
+      <div class="date-options"><label>시작일<input type="date" id="start" required></label><span>—</span><label>종료일<input type="date" id="end" required></label><button type="submit" class="btn-primary">범위 적용</button><button type="button" id="recent-period" class="theme-toggle-btn">최근 7일 보기</button></div></div>
       <div class="filter-bottom"><label class="inline-select">집계 방식 <select id="mode"><option value="posts">언급 게시물 수</option><option value="clusters">유사 본문 중복 제거</option></select></label><label><input id="exclude-pins" type="checkbox" checked> 고정 알림 제외</label><label><input id="exclude-lists" type="checkbox"> 종목 나열 목록 제외</label><label><input id="other" type="checkbox"> 상장 미검증 기업 포함</label><button id="reset" type="button" class="text-btn">초기화</button></div>
     </form>
     <div id="error" class="error-banner" role="alert" hidden></div>
+    <p id="refresh-status" class="card-hint" role="status">자동 수집은 꺼져 있습니다. ‘최신 데이터 수집’으로 활성 채널 전체를 Telegram에서 수집합니다. 화면 조회·저장 데이터 다시 읽기는 수집하지 않습니다.</p>
     <div id="coverage-warning" class="coverage-warning" role="status" hidden></div>
     <section class="stats-grid" aria-label="선택 범위 통계">
       <div class="stat-card card-blue"><div class="stat-label">수집 메시지</div><div id="stat-posts" class="stat-value">—</div><div class="stat-sub"><span class="stat-tag">선택 범위</span> 고정·첨부 전용 포함</div></div>
@@ -35,7 +36,7 @@
       <div id="ai-result" class="brief-body" aria-live="polite">선택한 채널·기간의 본문을 AI로 새롭게 요약합니다. 아래 집계 브리프와 저장된 이슈 요약은 AI 생성 결과가 아닙니다.</div>
     </section>
     <section class="ai-intel-banner" aria-label="관심 브리프">
-      <div class="ai-intel-header"><div class="ai-intel-title"><span>✦</span> 채널 관심 브리프 <span class="ai-sparkle-badge">원문 기반 샘플</span></div><button id="method" class="text-btn">집계 기준 보기 ↗</button></div>
+      <div class="ai-intel-header"><div class="ai-intel-title"><span>✦</span> 채널 관심 브리프 <span class="ai-sparkle-badge">저장 원문 기반</span></div><button id="method" class="text-btn">집계 기준 보기 ↗</button></div>
       <div id="brief" class="brief-body">저장된 메시지의 실제 언급을 집계하고 있습니다.</div>
       <div class="brief-notes"><span id="coverage">—</span><span>비교 기간 미수집 · 증가율 제공 안 함</span></div>
     </section>

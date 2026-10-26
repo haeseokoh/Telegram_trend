@@ -6,6 +6,7 @@ from collections import Counter, defaultdict
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from app import channel_manager
+from app import issues as issue_engine
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / 'data'
@@ -21,7 +22,9 @@ def load():
         mentions = list(csv.DictReader(f))
     for m in mentions:
         m['pin_notice'] = m['pin_notice'] == 'True'
+    issue_index=issue_engine.index(posts,mentions,DATA/'issue_index.json' if DATA==ROOT/'data' else None)
     return {'posts': posts, 'mentions': mentions,
+            'issue_index':issue_index,
             'meta': json.loads((DATA / 'collection.json').read_text(encoding='utf-8')),
             'issues': json.loads((DATA / 'issues.json').read_text(encoding='utf-8'))}
 
@@ -68,11 +71,14 @@ def aggregate(data, filters, focus=None):
         counts = Counter(m['datetime_kst'][:10] for m in mm)
         timeline.append({'entity': name, 'values': [counts[d] if known_start <= d < known_end else None for d in dates]})
     visible = {m['url'] for m in mentions}
-    issues = []
+    index=data.get('issue_index') or issue_engine.index(data['posts'],data['mentions'])
+    issues=issue_engine.select(index,mentions,focus)
+    manual_issues = []
     for issue in data['issues']:
-        supporting = [u for u in issue['links'] if u in visible]
-        if supporting and any(e in grouped for e in issue['entities']) and (not focus or focus in issue['entities']):
-            issues.append({**issue, 'links': supporting, 'sample_source_count': len(issue['links'])})
+        # A saved explanation stays attached to ALL of its original evidence; never relink it.
+        supporting={m['url'] for m in mentions if (m['entity']==focus if focus else m['entity'] in issue['entities'])}
+        if issue['links'] and set(issue['links'])<=supporting and (not focus or focus in issue['entities']):
+            manual_issues.append({**issue,'kind':'saved_manual','is_ai':False})
     channel_summary = []
     warnings=[]
     def covered(ch,d):
@@ -102,7 +108,12 @@ def aggregate(data, filters, focus=None):
             'text_posts': sum(bool(p['text']) for p in posts), 'entities': len(ranking),
             'entity_mentions': len(mentions), 'duplicate_groups': sum(n > 1 for n in Counter(p['duplicate_cluster'] for p in posts).values()),
             'counted_posts': len(visible)}, 'ranking': ranking, 'dates': dates,
-            'timeline': timeline, 'issues': issues, 'channels': channel_summary}
+            'timeline': timeline, 'issues': issues, 'manual_issues':manual_issues,
+            'issue_state':{'status':'ready' if issues else 'empty','kind':'rule_evidence',
+                           'signature':index['signature'],'generated_at_utc':index['generated_at_utc'],
+                           'latest_source_kst':max((i['latest_datetime_kst'] for i in issues),default=None),
+                           'shown_entities':len(issues),'max_entities':12,'max_sources_per_entity':3},
+            'channels': channel_summary}
 
 
 def explore(data, filters, query='', entity='', kind='all', page=1, page_size=20):

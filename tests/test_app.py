@@ -128,6 +128,7 @@ class DashboardTests(unittest.TestCase):
         self.assertEqual(self.client.post('/api/reload',headers={'Origin':'https://unrelated.example'}).status_code,403)
         self.assertEqual(self.client.get('/').status_code,200)
         self.assertEqual(self.client.get('/static/js/dashboard.js').status_code,200)
+        self.assertIn('no-cache',self.client.get('/static/css/app.css').headers['cache-control'])
 
     def test_eight_channels_and_public_coverage(self):
         d=self.client.get('/api/dashboard').json()

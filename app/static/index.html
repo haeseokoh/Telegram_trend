@@ -5,8 +5,8 @@
   <title>텔레그램 트렌드 인텔리전스</title>
   <meta name="description" content="공개 텔레그램 채널의 종목 언급과 관련 이슈를 탐색하는 대시보드">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='8' fill='%232563eb'/%3E%3Cpath d='M8 28L17 19L23 24L33 10' stroke='white' stroke-width='3' fill='none'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="/static/css/reference.css"><link rel="stylesheet" href="/static/css/app.css">
-  <script defer src="/static/js/dashboard.js"></script>
+  <link rel="stylesheet" href="/static/css/reference.css"><link rel="stylesheet" href="/static/css/app.css?v=issues-20261026">
+  <script defer src="/static/js/dashboard.js?v=issues-20261026"></script>
   <script defer src="/static/js/ai.js"></script>
 </head>
 <body class="theme-light">
@@ -48,7 +48,7 @@
       <article class="dashboard-card"><div class="card-header"><h2 class="card-title">▥ 주요 종목 언급 추이</h2><span class="badge-tag">한국시간 · 일별 빈도</span></div><div id="legend" class="chart-legend"></div><div id="chart" class="chart-wrap"></div><details class="chart-data"><summary>차트 수치 표로 보기</summary><div id="chart-table" class="table-responsive"></div></details><p id="chart-note" class="card-hint"></p></article>
       <article class="dashboard-card"><div class="card-header"><h2 class="card-title">◫ 채널별 수집 현황</h2><span class="badge-tag">실제 공개 응답</span></div><div id="channels" class="channel-list"></div></article>
     </section>
-    <section class="dashboard-card issues-section"><div class="card-header"><h2 class="card-title">✦ 종목별 관련 이슈 & 원문</h2><span class="badge-tag">주장 요약 · 사실 검증 전</span></div><p class="card-hint">전체 샘플에서 작성한 이슈 요약입니다. 현재 범위에 포함된 근거 링크만 표시합니다.</p><div id="issues" class="issue-grid"></div></section>
+    <section class="dashboard-card issues-section" id="issue-section"><div class="card-header"><h2 class="card-title">✦ 종목별 관련 이슈 & 원문</h2><span class="badge-tag">선택 범위 최신 근거</span></div><p class="card-hint">사전 매칭과 규칙으로 종목별 최신 원문을 묶어 발췌하며, 동명이의어 등 오인식이 있을 수 있습니다. 동일 사건으로 판정하거나 AI로 요약한 결과는 아닙니다. 최대 12종목·종목별 최신 3개 본문을 표시합니다. 실제 AI 해석은 ‘이 종목 AI 브리프’를 눌러 생성하세요.</p><p id="issue-status" class="card-hint" role="status">선택 범위의 원문 근거를 확인하고 있습니다.</p><div id="issues" class="issue-grid"></div><details id="manual-issues" hidden><summary>저장된 수동 설명 보기 · 원래 근거 전체가 선택 범위에 있는 항목만</summary><div id="manual-issue-list" class="issue-grid"></div></details></section>
     <section class="reports-section" id="explorer"><div class="card-header"><h2 class="card-title">≡ 공개 메시지 탐색기</h2><span id="explorer-total" class="badge-tag">—</span></div>
       <div class="reports-filter-bar"><div class="filter-group" id="kinds"><button class="filter-btn active" data-kind="all">전체</button><button class="filter-btn" data-kind="duplicates">반복 본문</button><button class="filter-btn" data-kind="forwarded">전달 글</button><button class="filter-btn" data-kind="list">종목 목록</button></div><label class="search-wrap"><span class="sr-only">메시지 검색</span><input type="search" id="search" class="search-input" placeholder="종목명, 이슈, 본문 검색…"></label></div>
       <div id="entity-filter" class="entity-filter" hidden><span></span><button class="text-btn">종목 선택 해제 ×</button></div>

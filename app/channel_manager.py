@@ -293,7 +293,7 @@ def worker(job,on_complete):
         save_json(archive/'collection.json',stat)
         save_json(archive/'previous_posts.json',original)
         backup=archive/'previous_outputs'; backup.mkdir(exist_ok=True)
-        output_names=('posts.json','collection.json','posts_annotated.json','mentions.csv','ranking.csv','daily_mentions.csv','entities.json','duplicate_clusters.json','issues.json','analysis_validation.json')
+        output_names=('posts.json','collection.json','posts_annotated.json','mentions.csv','ranking.csv','daily_mentions.csv','entities.json','duplicate_clusters.json','issues.json','issue_index.json','analysis_validation.json')
         for name in output_names:
             if (DATA/name).exists(): shutil.copy2(DATA/name,backup/name)
         # Durable source files first; publish in-memory snapshot only after all outputs are ready.

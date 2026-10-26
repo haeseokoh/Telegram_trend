@@ -30,6 +30,14 @@ for path in D.rglob('*.html'):
     soup=BeautifulSoup(path.read_text(encoding='utf-8'),'html.parser')
     snapshot_ids.update('https://t.me/'+node['data-post'] for node in soup.select('.tgme_widget_message[data-post]'))
 checks['saved_text_hashes']=all(hashlib.sha256(p['text'].encode()).hexdigest()==p['text_sha256'] for p in posts)
+if (D/'issue_index.json').exists():
+    from app import issues as issue_engine
+    issue_index=read('issue_index.json')
+    issue_mentions=[{**m,'pin_notice':m['pin_notice']=='True'} for m in mentions]
+    checks['issue_index_matches_snapshot']=issue_index['signature']==issue_engine.signature(posts,issue_mentions)
+    by_url={p['url']:p for p in posts}
+    checks['issue_excerpts_are_source_text']=all(s['url'] in by_url and s['excerpt'] in by_url[s['url']]['text']
+        for sources in issue_index['by_entity'].values() for s in sources)
 if not meta.get('packaged_sample'):
     sample_hashes={p['url']:p['text_sha256'] for p in json.loads((R/'sample_data'/'posts.json').read_text(encoding='utf-8'))}
     sample_urls=set(meta.get('sample_source_urls',[]))

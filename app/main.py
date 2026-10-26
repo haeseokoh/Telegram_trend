@@ -14,6 +14,14 @@ from pydantic import BaseModel
 app = FastAPI(title='텔레그램 트렌드 인텔리전스', version='1.0.0')
 STATIC = Path(__file__).parent / 'static'
 app.mount('/static', StaticFiles(directory=STATIC), name='static')
+
+@app.middleware('http')
+async def revalidate_ui(request,call_next):
+    response=await call_next(request)
+    if request.url.path=='/' or request.url.path.startswith('/static/'):
+        response.headers['Cache-Control']='no-cache, max-age=0, must-revalidate'
+    return response
+
 channel_manager.recover_jobs()
 channel_manager.channels()
 snapshot = service.load()
